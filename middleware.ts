@@ -9,8 +9,14 @@ const protectedRoute = createRouteMatcher([
   '/personal-room',
 ]);
 
-export default clerkMiddleware((auth, req) => {
-  if (protectedRoute(req)) auth().protect();
+export default clerkMiddleware(async (auth, req) => {
+  const authObj = await auth();
+
+  // Redirect unauthenticated users to the sign-in page
+  if (protectedRoute(req) && !authObj.userId) {
+    // Redirect to the sign-in page if not authenticated
+    return authObj.redirectToSignIn();
+  }
 });
 
 export const config = {
