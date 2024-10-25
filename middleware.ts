@@ -10,17 +10,14 @@ const protectedRoute = createRouteMatcher([
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
-  try {
-    const authObj = await auth();
-    if (protectedRoute(req) && !authObj.userId) {
-      return authObj.redirectToSignIn();
-    }
-  } catch (error) {
-    console.error('Error in middleware:', error);
-    return new Response('Internal Server Error', { status: 500 });
+  const authObj = await auth();
+
+  // Redirect unauthenticated users to the sign-in page
+  if (protectedRoute(req) && !authObj.userId) {
+    // Redirect to the sign-in page if not authenticated
+    return authObj.redirectToSignIn();
   }
 });
-
 
 export const config = {
   matcher: ['/((?!.+\\.[\\w]+$|_next).*)', '/', '/(api|trpc)(.*)'],
